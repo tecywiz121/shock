@@ -1,0 +1,9 @@
+function(define_test test_name)
+    add_executable(${test_name} ${test_name})
+    target_link_libraries(${test_name} shock)
+    add_test(${test_name} ${test_name})
+endfunction(define_test)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-parameter -Wno-unused-function")
+add_definitions(-D_POSIX_SOURCE)
+define_test(http_test)
