@@ -60,7 +60,7 @@ $ make
 ```c
 typedef void (shock_output_fn)(shock_http* self,
                                void* closure,
-                               char* data,
+                               const char* data,
                                size_t length);
 ```
 A function provided by the application that writes bytes to the connected
@@ -74,7 +74,7 @@ client, be it over `stdin`/`stdout`, sockets, or messenger pigeons.
 typedef void (shock_dispatch_fn)(shock_http* self,
                                  void* closure,
                                  shock_request_part state,
-                                 char* data,
+                                 const char* data,
                                  size_t length);
 ```
 
@@ -113,7 +113,7 @@ buffers, or write trailer headers.
 
 ###Recv
 ```c
-size_t shock_http_recv(shock_http* self, char* data, size_t length);
+size_t shock_http_recv(shock_http* self, const char* data, size_t length);
 ```
 Call when there is data available from the client that needs to be processed.
 Returns the number of bytes consumed. If this returns `0`, that usually means
@@ -128,7 +128,7 @@ after a header.) If the application's receive buffer is full, call
 ```c
 void shock_http_send(shock_http* self,
                      shock_response_part part,
-                     char* data,
+                     const char* data,
                      size_t length);
 ```
 Send something to the client, like the version of HTTP or a header value.
