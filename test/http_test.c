@@ -34,18 +34,18 @@ CHEAT_DECLARE(
     unsigned int        g_dispatch_count;
     void*               g_dispatch_closure;
     shock_request_part  g_dispatch_part;
-    char*               g_dispatch_data;
+    const char*         g_dispatch_data;
     size_t              g_dispatch_length;
 
     shock_http*         g_output_srv;
-    char*               g_output_data;
+    const char*         g_output_data;
     size_t              g_output_length;
     size_t              g_output_count;
 
     void dispatch(shock_http* srv,
                   void* closure,
                   shock_request_part state,
-                  char* data,
+                  const char* data,
                   size_t length)
     {
         g_dispatch_srv = srv;
@@ -58,7 +58,7 @@ CHEAT_DECLARE(
 
     void output(shock_http* srv,
                 void* closure,
-                char* data,
+                const char* data,
                 size_t len)
     {
         g_output_srv = srv;
@@ -759,3 +759,4 @@ CHEAT_TEST(shock_http_send_body,
     cheat_assert(g_output_length == 2);
     cheat_assert(memcmp(g_output_data, "\r\n", 2) == 0);
 )
+

@@ -51,6 +51,22 @@
 #define SHOCK_TOKENPASTE(x, y) x ## y
 #define SHOCK_TOKENPASTE2(x, y) SHOCK_TOKENPASTE(x, y)
 #define SHOCK_PVT(T) T SHOCK_TOKENPASTE2(_pvt, __COUNTER__) __attribute__((deprecated))
-typedef _Bool shock_bool;
+typedef char shock_bool;
+
+#if __cplusplus >= 201103L
+#   define shock_static_assert(cond, msg) static_assert(cond, msg);
+#elif __STDC_VERSION__ >= 201112L
+#   define shock_static_assert(cond, msg) _Static_assert(cond, msg);
+#else
+#   define shock_static_assert(cond, msg)
+#endif
+
+#if __STDC_VERSION__ >= 201112L || __cplusplus >= 201103L
+#   define SHOCK_PR_SIZET "zX"
+#elif defined(ARDUINO) && (defined(__avr__) || defined(__AVR__))
+#   define SHOCK_PR_SIZET "hX"
+#else
+#   error Unsure of how to format size_t for printf
+#endif
 
 #endif /* SHOCK_COMMON_H */

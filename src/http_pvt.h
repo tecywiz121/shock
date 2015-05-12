@@ -71,13 +71,13 @@ typedef struct shock_http_pvt
     shock_header header;
 
     shock_bool chunked;
-    uintmax_t content_length;
+    unsigned long content_length;
 
     shock_send_state sstate;
 }
 shock_http_pvt;
 
-_Static_assert(sizeof(shock_http_pvt) == sizeof(shock_http),
-               "shock_http_pvt and shock_http don't match");
+shock_static_assert(sizeof(shock_http_pvt) == sizeof(shock_http),
+               "shock_http_pvt and shock_http don't match")
 
 #endif /* SHOCK_HTTP_PVT_H */

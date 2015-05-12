@@ -30,7 +30,7 @@
 // Private Method Prototypes
 ///////////////////////////////////////////////////////////////////////////////
 
-static void output(shock_http_pvt* me, char* data, size_t length);
+static void output(shock_http_pvt* me, const char* data, size_t length);
 
 static void to_version(shock_http_pvt* me);
 static void to_body(shock_http_pvt* self);
@@ -42,48 +42,48 @@ static void to_status_code(shock_http_pvt* self);
 static shock_send_state send_part_to_state(shock_response_part part);
 
 static size_t receive_body_length(shock_http_pvt* me,
-                                  char* data,
+                                  const char* data,
                                   size_t length);
 
 static size_t receive_body(shock_http_pvt* me,
-                           char* data,
+                           const char* data,
                            size_t length);
 
 static size_t receive_after_header(shock_http_pvt* me,
-                                   char* data,
+                                   const char* data,
                                    size_t length);
 
 static size_t receive_header_value(shock_http_pvt* me,
-                                   char* data,
+                                   const char* data,
                                    size_t length);
 
 static size_t receive_header_name(shock_http_pvt* me,
-                                  char* data,
+                                  const char* data,
                                   size_t length);
 
 static size_t receive_version(shock_http_pvt* me,
-                              char* data,
+                              const char* data,
                               size_t length);
 
 static size_t receive_method(shock_http_pvt* me,
-                             char* data,
+                             const char* data,
                              size_t length);
 
 static size_t receive_path(shock_http_pvt* me,
-                           char* data,
+                           const char* data,
                            size_t length);
 
 static size_t receive_lws(shock_http_pvt* me,
-                          char* data,
+                          const char* data,
                           size_t length,
                           shock_receive_state next);
 
 static void parse_transfer_encoding(shock_http_pvt* me,
-                                    char* data,
+                                    const char* data,
                                     size_t length);
 
 static void parse_content_length(shock_http_pvt* me,
-                                 char* data,
+                                 const char* data,
                                  size_t length);
 
 static shock_bool find_or_discard_eol(shock_http_pvt* me,
@@ -94,12 +94,12 @@ static shock_bool find_or_discard_eol(shock_http_pvt* me,
                                       shock_receive_state next);
 
 static shock_bool find_or_discard_ws(shock_http_pvt* me,
-                                     char* data,
+                                     const char* data,
                                      size_t* length,
-                                     char** whitespace,
+                                     const char** whitespace,
                                      shock_receive_state next);
 
-static char* find_ws(const char* data, size_t length);
+static const char* find_ws(const char* data, size_t length);
 
 ///////////////////////////////////////////////////////////////////////////////
 // Implementations
@@ -134,7 +134,7 @@ void shock_http_drop(shock_http* self)
     ((shock_http_pvt*)self)->discarding = 1;
 }
 
-size_t shock_http_recv(shock_http* self, char* data, size_t len)
+size_t shock_http_recv(shock_http* self, const char* data, size_t len)
 {
     shock_http_pvt* me = (shock_http_pvt*)self; // Access our privates.
 
@@ -234,12 +234,12 @@ size_t shock_http_recv(shock_http* self, char* data, size_t len)
     return total;
 }
 
-static size_t receive_method(shock_http_pvt* me, char* data, size_t length)
+static size_t receive_method(shock_http_pvt* me, const char* data, size_t length)
 {
     // Scan for the space after the method:
     //      GET /path HTTP/1.1
     //      ---^
-    char* whitespace;
+    const char* whitespace;
     if (find_or_discard_ws(me, data, &length, &whitespace, RECEIVE_AFTER_METHOD)) {
         return length;
     }
@@ -262,7 +262,7 @@ static size_t receive_method(shock_http_pvt* me, char* data, size_t length)
 }
 
 static size_t receive_lws(shock_http_pvt* me,
-                          char* data,
+                          const char* data,
                           size_t length,
                           shock_receive_state next)
 {
@@ -282,12 +282,12 @@ static size_t receive_lws(shock_http_pvt* me,
     return ii;                          // Didn't find a non-whitespace byte,
 }
 
-static size_t receive_path(shock_http_pvt* me, char* data, size_t length)
+static size_t receive_path(shock_http_pvt* me, const char* data, size_t length)
 {
     // Scan for the space after the path:
     //      GET /path HTTP/1.1
     //      ---------^
-    char* whitespace;
+    const char* whitespace;
     if (find_or_discard_ws(me, data, &length, &whitespace, RECEIVE_AFTER_PATH)) {
         return length;
     }
@@ -309,7 +309,7 @@ static size_t receive_path(shock_http_pvt* me, char* data, size_t length)
     return length;                  // Return the number of consumed bytes.
 }
 
-static size_t receive_version(shock_http_pvt* me, char* data, size_t length)
+static size_t receive_version(shock_http_pvt* me, const char* data, size_t length)
 {
     // Scan for the new line after the version:
     //      GET /path HTTP/1.1<CR><LF>
@@ -339,13 +339,13 @@ static size_t receive_version(shock_http_pvt* me, char* data, size_t length)
 }
 
 static size_t receive_header_name(shock_http_pvt* me,
-                                  char* data,
+                                  const char* data,
                                   size_t length)
 {
     // Scan for the colon after the header name:
     //      Host: www.example.com<CR><LF>
     //      ----^
-    char* colon = memchr(data, ':', length);
+    char* colon = (char*) memchr(data, ':', length);
 
     if (!colon) {                           // Did we find a colon?
         if (me->discarding) {               // No, so are we discarding?
@@ -402,7 +402,7 @@ static size_t receive_header_name(shock_http_pvt* me,
 }
 
 static size_t receive_header_value(shock_http_pvt* me,
-                                   char* data,
+                                   const char* data,
                                    size_t length)
 {
     // Scan for the end of line after the header value:
@@ -447,8 +447,23 @@ static size_t receive_header_value(shock_http_pvt* me,
     return consumed;
 }
 
+static void advance_to_body(shock_http_pvt* me)
+{
+    if (me->chunked || me->content_length) {    // Are we expecting a body?
+        me->rstate = RECEIVE_BODY;              // Yes, so advance to it.
+    } else {
+        char buf[1];                            // No body, so dispatch a
+        me->dispatch((shock_http*)me,           // request complete message.
+                     me->closure,
+                     SHOCK_REQUEST_COMPLETE,
+                     buf,
+                     0);
+        me->rstate = RECEIVE_METHOD;            // Ready for next request.
+    }
+}
+
 static size_t receive_after_header(shock_http_pvt* me,
-                                   char* data,
+                                   const char* data,
                                    size_t length)
 {
     if (0 == length) {                  // Check if we have any data at all.
@@ -461,7 +476,7 @@ static size_t receive_after_header(shock_http_pvt* me,
     //      <LF>
     //      ^^^^
     if ('\n' == data[0]) {              // Is the first character a line feed?
-        me->rstate = RECEIVE_BODY;      // Yes, so advance to the body.
+        advance_to_body(me);            // Yes, so advance to the body.
         return 1;                       // Consume the <LF> character.
     }
 
@@ -473,18 +488,7 @@ static size_t receive_after_header(shock_http_pvt* me,
         if (1 == length) {              // Yes, so is there room for a <LF>?
             return 0;                   // No, so we need more data.
         } else if (data[1] == '\n') {   // Are we seeing a '<CR><LF>'?
-            if (me->chunked             // Yes, so determine if there's a body.
-                || me->content_length) {
-                me->rstate = RECEIVE_BODY;  // Yes, so advance to the body.
-            } else {
-                char buf[1];
-                me->dispatch((shock_http*)me,
-                             me->closure,
-                             SHOCK_REQUEST_COMPLETE,
-                             buf,
-                             0);
-                me->rstate = RECEIVE_METHOD;
-            }
+            advance_to_body(me);        // Yes, so advance to the body.
             return 2;                   // Consume the <CR><LF> pair.
         }
     }
@@ -495,7 +499,7 @@ static size_t receive_after_header(shock_http_pvt* me,
 }
 
 static size_t receive_body(shock_http_pvt* me,
-                           char* SHOCK_UNUSED(data),
+                           const char* SHOCK_UNUSED(data),
                            size_t SHOCK_UNUSED(length))
 {
     if (me->chunked) {
@@ -507,7 +511,7 @@ static size_t receive_body(shock_http_pvt* me,
 }
 
 static void parse_transfer_encoding(shock_http_pvt* me,
-                                    char* data,
+                                    const char* data,
                                     size_t length)
 {
     const char* const chunked = "chunked";
@@ -521,7 +525,7 @@ static void parse_transfer_encoding(shock_http_pvt* me,
 }
 
 static void parse_content_length(shock_http_pvt* me,
-                                 char* data,
+                                 const char* data,
                                  size_t length)
 {
     char text[length+1];                            // Space to put null byte.
@@ -529,7 +533,7 @@ static void parse_content_length(shock_http_pvt* me,
     text[length] = '\0';                            // Add null terminator.
 
     errno = 0;                                      // Reset to detect errors.
-    uintmax_t value = strtoumax(text, NULL, 10);    // Convert text to integer.
+    unsigned long value = strtoul(text, NULL, 10);  // Convert text to integer.
 
     if (0 != errno) {                               // Did we have an error?
         return;                                     // Yep, bail out.
@@ -539,7 +543,7 @@ static void parse_content_length(shock_http_pvt* me,
 }
 
 static size_t receive_body_length(shock_http_pvt* me,
-                                  char* data,
+                                  const char* data,
                                   size_t length)
 {
     if (length >= me->content_length) {
@@ -563,11 +567,11 @@ static size_t receive_body_length(shock_http_pvt* me,
     return length;
 }
 
-static char* find_ws(const char* data, size_t length)
+static const char* find_ws(const char* data, size_t length)
 {
     // TODO: Don't scan data twice
-    char* space = memchr(data, ' ', length);
-    char* tab = memchr(data, '\t', length);
+    char* space = (char*) memchr(data, ' ', length);
+    char* tab = (char*) memchr(data, '\t', length);
 
     if (!space) {
         return tab;
@@ -579,9 +583,9 @@ static char* find_ws(const char* data, size_t length)
 }
 
 static shock_bool find_or_discard_ws(shock_http_pvt* me,
-                                     char* data,
+                                     const char* data,
                                      size_t* length,
-                                     char** whitespace,
+                                     const char** whitespace,
                                      shock_receive_state next)
 {
     *whitespace = find_ws(data, *length);
@@ -607,7 +611,7 @@ static shock_bool find_or_discard_eol(shock_http_pvt* me,
                                       size_t* consumed,
                                       shock_receive_state next)
 {
-    char* lf = memchr(data, '\n', length);          // Find a line feed.
+    char* lf = (char*) memchr(data, '\n', length);  // Find a line feed.
 
     *data_len = 0;                                  // Clear data length.
 
@@ -639,7 +643,7 @@ static shock_bool find_or_discard_eol(shock_http_pvt* me,
 
 void shock_http_send(shock_http* self,
                      shock_response_part part,
-                     char* data,
+                     const char* data,
                      size_t length)
 {
     shock_http_pvt* me = (shock_http_pvt*)self;
@@ -673,12 +677,12 @@ void shock_http_send(shock_http* self,
 
     // Write the Transfer-Encoding: chunked header
     if (SEND_BODY == me->sstate) {              // Are we sending the body?
-#define n_digits (sizeof(uintmax_t)*2 + 3)      // Space for enough hex digits,
+#define n_digits (sizeof(length)*2 + 3)         // Space for enough hex digits,
         char digits[n_digits];                  // including \r\n\0 at end.
 
         size_t written = snprintf(digits,
                                   n_digits,
-                                  "%zX\r\n",
+                                  "%" SHOCK_PR_SIZET "\r\n",
                                   length);
 
         output(me, digits, written);
@@ -754,7 +758,7 @@ static shock_send_state send_part_to_state(shock_response_part part)
     }
 }
 
-static void output(shock_http_pvt* me, char* data, size_t length)
+static void output(shock_http_pvt* me, const char* data, size_t length)
 {
     me->output((shock_http*)me, me->closure, data, length);
 }

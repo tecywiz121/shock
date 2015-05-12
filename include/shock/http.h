@@ -59,12 +59,12 @@ typedef struct shock_http shock_http;
 
 typedef void (shock_output_fn)(shock_http* self,
                                void* closure,
-                               char* data,
+                               const char* data,
                                size_t length);
 typedef void (shock_dispatch_fn)(shock_http* self,
                                  void* closure,
                                  shock_request_part state,
-                                 char* data,
+                                 const char* data,
                                  size_t length);
 
 struct shock_http
@@ -77,7 +77,7 @@ struct shock_http
     SHOCK_PVT(int);
     SHOCK_PVT(int);
     SHOCK_PVT(shock_bool);
-    SHOCK_PVT(uintmax_t);
+    SHOCK_PVT(unsigned long);
 
     SHOCK_PVT(int);
 };
@@ -92,12 +92,12 @@ SHOCK_API
 void shock_http_fini(shock_http* self);
 
 SHOCK_API
-size_t shock_http_recv(shock_http* self, char* data, size_t length);
+size_t shock_http_recv(shock_http* self, const char* data, size_t length);
 
 SHOCK_API
 void shock_http_send(shock_http* self,
                      shock_response_part part,
-                     char* data,
+                     const char* data,
                      size_t length);
 
 SHOCK_API

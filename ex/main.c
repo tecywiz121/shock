@@ -23,7 +23,7 @@
 static void dispatch(shock_http*        self,
                      void*              closure,
                      shock_request_part state,
-                     char*              data,
+                     const char*        data,
                      size_t             length)
 {
     char text[length+1];
@@ -43,7 +43,7 @@ static void dispatch(shock_http*        self,
 
 static void output(shock_http* self,
                    void* closure,
-                   char* data,
+                   const char* data,
                    size_t length)
 {
     fwrite(data, 1, length, stdout);

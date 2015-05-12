@@ -9,6 +9,10 @@ if(COVERAGE)
     SETUP_TARGET_FOR_COVERAGE(coverage test/http_test coverage)
 endif()
 
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wc++-compat")
+endif()
+
 target_include_directories(shock
                             PUBLIC
                                 ${CMAKE_SOURCE_DIR}/include)
