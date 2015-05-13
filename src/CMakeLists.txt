@@ -1,4 +1,4 @@
-set(SRCS http.c)
+set(SRCS http.c storage.c)
 
 add_library(shock ${SRCS})
 
