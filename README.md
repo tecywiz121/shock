@@ -24,10 +24,10 @@ Here are *some* of the known limitations:
 * Many, many more...
 
 ##Compiling
-
 Shock uses cmake for building. CMake can generate many types of build files for
 all sorts of systems. I've only tested Makefiles on Ubuntu 14.04.
 
+###Unix
 Here's the basic steps to build after you've cloned the repository:
 
 ```bash
@@ -52,6 +52,20 @@ $ cd build
 $ cmake .. -DCPPCHECK=OFF
 $ make
 ```
+
+###Arduino
+To build the zip library for use with the Arduino IDE:
+
+```bash
+$ mkdir build
+$ cd build
+$ cmake .. -DCPPCHECK=OFF -DARDUINO=ON
+$ make
+$ make package
+```
+
+Your library will end up in `./build/shock-<version>.zip`.
+
 ##Usage
 *There are some examples in the ex folder, expect more over time.*
 
