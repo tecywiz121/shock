@@ -1,6 +1,8 @@
 Shock HTTP Server
 =================
 
+[![Build Status](https://drone.io/github.com/tecywiz121/shock/status.png)](https://drone.io/github.com/tecywiz121/shock/latest)
+
 Shock is a very simple HTTP server library designed for low memory usage, and
 no dynamic allocations. The goal is to be suitable for use on embedded systems
 where memory comes at a premium.
