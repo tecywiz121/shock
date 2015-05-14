@@ -24,35 +24,45 @@
 #include <shock/common.h>
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-typedef struct shock_storage shock_storage;
-
-struct shock_storage
-{
-    SHOCK_PVT(const char*);
-    SHOCK_PVT(uint8_t);
-};
-
 #if defined(__avr__) || defined(__AVR__)
 #   define SHOCK_PSTR(s) ((const PROGMEM char*)(s))
+#   define SHOCK_PROGMEM PROGMEM
 #   define SHOCK_USE_PROGMEM 1
 #else
 #   define SHOCK_PSTR(s) (s)
+#   define SHOCK_PROGMEM
 #endif
 
 SHOCK_API
-void shock_storage_init(shock_storage* self, const char* data);
+int8_t shock_storage_i8(const int8_t* data);
 
 SHOCK_API
-uint8_t shock_storage_get_one(shock_storage* self);
+int16_t shock_storage_i16(const int16_t* data);
 
 SHOCK_API
-uint16_t shock_storage_get_n(shock_storage* self, unsigned char n);
+int32_t shock_storage_i32(const int32_t* data);
+
+SHOCK_API
+uint8_t shock_storage_u8(const uint8_t* data);
+
+SHOCK_API
+uint16_t shock_storage_u16(const uint16_t* data);
+
+SHOCK_API
+uint32_t shock_storage_u32(const uint32_t* data);
+
+SHOCK_API
+const void* shock_storage_ptr(const void** data);
+
+SHOCK_API
+void* shock_storage_cpy(void* dest, const void* src, size_t len);
 
 #ifdef __cplusplus
 }

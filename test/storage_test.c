@@ -30,59 +30,30 @@
 #endif
 
 CHEAT_DECLARE(
-    shock_storage g_sto;
+    const int8_t g_i8 SHOCK_PROGMEM = 5;
+    const uint8_t g_u8 SHOCK_PROGMEM = 7;
+    const int16_t g_i16 SHOCK_PROGMEM = 0x0CDE;
+    const uint16_t g_u16 SHOCK_PROGMEM = 0xABAB;
+    const int32_t g_i32 SHOCK_PROGMEM = 0x0ABCACDE;
+    const uint32_t g_u32 SHOCK_PROGMEM = 0xFEFEFEFE;
+    const void* g_ptr SHOCK_PROGMEM = (void*)0xDEADBEEF;
+    const uint8_t g_data[] SHOCK_PROGMEM = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 )
 
-CHEAT_SET_UP(
-    shock_storage_init(&g_sto, SHOCK_PSTR("hello world"));
+CHEAT_TEST(shock_storage_gets,
+    cheat_assert(5 == shock_storage_i8(&g_i8));
+    cheat_assert(7 == shock_storage_u8(&g_u8));
+    cheat_assert(0x0CDE == shock_storage_i16(&g_i16));
+    cheat_assert(0xABAB == shock_storage_u16(&g_u16));
+    cheat_assert(0x0ABCACDE == shock_storage_i32(&g_i32));
+    cheat_assert(0xFEFEFEFE == shock_storage_u32(&g_u32));
+    cheat_assert((void*)0xDEADBEEF == shock_storage_ptr(&g_ptr));
 )
 
-CHEAT_TEST(shock_storage_get_one,
-    uint8_t expected[] = {0, 0, 0, 1, 0, 1, 1, 0,
-                          1, 0, 1, 0, 0, 1, 1, 0,
-                          0, 0, 1, 1, 0, 1, 1, 0,
-                          0, 0, 1, 1, 0, 1, 1, 0,
-                          1, 1, 1, 1, 0, 1, 1, 0,
-                          0, 0, 0, 0, 0, 1, 0, 0,
-                          1, 1, 1, 0, 1, 1, 1, 0,
-                          1, 1, 1, 1, 0, 1, 1, 0,
-                          0, 1, 0, 0, 1, 1, 1, 0,
-                          0, 0, 1, 1, 0, 1, 1, 0,
-                          0, 0, 1, 0, 0, 1, 1, 0,
-                          0, 0, 0, 0, 0, 0, 0, 0};
-
-    for (unsigned int ii = 0; ii < sizeof(expected)/sizeof(uint8_t); ii++) {
-        uint8_t v = shock_storage_get_one(&g_sto);
-        cheat_assert(v == expected[ii]);
-    }
-)
-
-CHEAT_TEST(shock_storage_get_n_1,
-    uint16_t expected[] = {0, 0, 0, 1, 0, 1, 1, 0,
-                           1, 0, 1, 0, 0, 1, 1, 0,
-                           0, 0, 1, 1, 0, 1, 1, 0,
-                           0, 0, 1, 1, 0, 1, 1, 0,
-                           1, 1, 1, 1, 0, 1, 1, 0,
-                           0, 0, 0, 0, 0, 1, 0, 0,
-                           1, 1, 1, 0, 1, 1, 1, 0,
-                           1, 1, 1, 1, 0, 1, 1, 0,
-                           0, 1, 0, 0, 1, 1, 1, 0,
-                           0, 0, 1, 1, 0, 1, 1, 0,
-                           0, 0, 1, 0, 0, 1, 1, 0,
-                           0, 0, 0, 0, 0, 0, 0, 0};
-
-    for (unsigned int ii = 0; ii < sizeof(expected)/sizeof(expected[0]); ii++) {
-        uint16_t v = shock_storage_get_n(&g_sto, 1);
-        cheat_assert(v == expected[ii]);
-    }
-)
-
-CHEAT_TEST(shock_storage_get_n_8,
-    uint16_t expected[] = {0x16, 0xa6, 0x36, 0x36, 0xf6, 0x04,
-                           0xee, 0xf6, 0x4e, 0x36, 0x26};
-
-    for (unsigned int ii = 0; ii < sizeof(expected)/sizeof(expected[0]); ii++) {
-        uint16_t v = shock_storage_get_n(&g_sto, 8);
-        cheat_assert(v == expected[ii]);
+CHEAT_TEST(stock_storage_cpy,
+    uint8_t result[11];
+    cheat_assert(result == shock_storage_cpy(result, g_data, 11));
+    for (uint8_t ii = 1; ii < 12; ii++) {
+        cheat_assert(result[ii-1] == ii);
     }
 )
