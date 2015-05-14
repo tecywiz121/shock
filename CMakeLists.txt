@@ -8,6 +8,8 @@ endif()
 option(CPPCHECK "enable scanning the source code with cppcheck" ON)
 option(COVERAGE "enable code coverage flags" OFF)
 option(ARDUINO "build arduino library" OFF)
+option(TESTS "build tests" ON)
+option(EXAMPLES "build example programs" ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
@@ -23,10 +25,14 @@ endif()
 
 add_subdirectory(src)
 
-enable_testing()
-add_subdirectory(test)
+if(EXAMPLES)
+    add_subdirectory(ex)
+endif()
 
-add_subdirectory(ex)
+if(TESTS)
+    enable_testing()
+    add_subdirectory(test)
+endif()
 
 if(ARDUINO)
     add_subdirectory(arduino)
